@@ -1,5 +1,6 @@
-import { AppDataSource } from "./data-source"
-import { User } from "./entity/User"
+import { AppDataSource } from "./data-source";
+import { User } from "./entity/User";
+import * as express from 'express';
 
 AppDataSource.initialize().then(async () => {
 
@@ -14,7 +15,15 @@ AppDataSource.initialize().then(async () => {
     console.log("Loading users from the database...")
     const users = await AppDataSource.manager.find(User)
     console.log("Loaded users: ", users)
+    
+    const app = express()
+    const port = 3000
 
-    console.log("Here you can setup and run express / fastify / any other framework.")
+    app.get('/', (req, res) => {
+        res.send('Hello World!')
+    });
 
-}).catch(error => console.log(error))
+    app.listen(port, () => {
+        console.log(`Example app listening at http://localhost:${port}`)
+    });
+}).catch(error => console.log(error));
