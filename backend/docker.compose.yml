@@ -10,6 +10,7 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - ./.pgdata:/var/lib/postgresql/data
+      - ./scripts/seed.sql:/docker-entrypoint-initdb.d/seed.sql
     ports:
       - 5432:5432
 
