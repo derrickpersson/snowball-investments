@@ -34,7 +34,6 @@ export class BankAccount extends Timestamps {
     @Column()
     accountHolderId: string;
 
-    @Column()
     @ManyToOne(() => User, { onDelete: "CASCADE" })
     @JoinColumn({ name: "accountHolderId" })
     accountHolder: User;
@@ -42,8 +41,6 @@ export class BankAccount extends Timestamps {
     @Column()
     accountType: AccountType;
 
-
-    @Column()
     @OneToMany(() => Transaction, transaction => transaction.bankAccount)
     transactions: Transaction[];
 }

@@ -15,13 +15,13 @@ export class Transaction extends Timestamps {
     @PrimaryGeneratedColumn("uuid")
     id: number;
 
-    @Column({ default: 0 })
+    @Column({ default: 0, type: "double precision" })
     debitAmount: number;
 
-    @Column({ default: 0 })
+    @Column({ default: 0, type: "double precision" })
     creditAmount: number;
 
-    @Column()
+    @Column({ nullable: true })
     description: string;
 
     @Column({ enum: TransactionCategory })
@@ -30,7 +30,6 @@ export class Transaction extends Timestamps {
     @Column()
     bankAccountId: string;
 
-    @Column()
     @ManyToOne(() => BankAccount, { onDelete: "CASCADE" })
     @JoinColumn({ name: "bankAccountId" })
     bankAccount: BankAccount;
