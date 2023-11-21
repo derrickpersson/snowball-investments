@@ -3,8 +3,9 @@ import { BankAccount } from './account.entity';
 import { TransactionRepository } from "./transactions/transaction.repository";
 import BigNumber from "bignumber.js";
 import { AppDataSource } from '../data-source';
+import { IBankAccountService } from '.';
 
-export class AccountService {
+export class DebitAccountService implements IBankAccountService {
     private bankAccountRepository: Repository<BankAccount>;
     private transactionRepository: typeof TransactionRepository;
     constructor(
@@ -14,12 +15,10 @@ export class AccountService {
         this.bankAccountRepository = (manager || AppDataSource.manager).getRepository(BankAccount);
     }
 
-    async getBalance(accountId: string): Promise<number> {
+    async getBalance(accountId: string): Promise<BigNumber> {
         const debitSum = await this.transactionRepository.sumDebitTransactions(accountId);
         const creditSum = await this.transactionRepository.sumCreditTransactions(accountId);
-        const debitBigNumber = new BigNumber(debitSum.sum || 0);
-        const creditBigNumber = new BigNumber(creditSum.sum || 0);
-        const balance =  debitBigNumber.minus(creditBigNumber).toNumber();
+        const balance =  debitSum.minus(creditSum);
         return balance;
     }
 }

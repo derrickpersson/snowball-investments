@@ -6,6 +6,7 @@ import { Transaction } from './transactions/transaction.entity';
 export enum AccountType {
     Chequing = "Chequing",
     Savings = "Savings",
+    Credit = "Credit",
     TFSA = "TFSA",
     RRSP = "RRSP",
     NonRegistered = "Non-Registered"
