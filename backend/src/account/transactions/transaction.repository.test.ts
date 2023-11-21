@@ -30,7 +30,7 @@ describe("TransactionRepository", () => {
             },
             {
                 bankAccountId,
-                creditAmount: 200.10,
+                creditAmount: 200.20,
                 debitAmount: 0,
                 category: TransactionCategory.Other,
             },
@@ -84,7 +84,7 @@ describe("TransactionRepository", () => {
 
     it("should sum credit transactions", async () => {
         const sum = await AppDataSource.manager.withRepository(TransactionRepository).sumCreditTransactions(bankAccountId);
-        expect(sum.isEqualTo(1000.20));
+        expect(sum.isEqualTo(1000.30));
     });
 
     it("should preserve fractional sums", async () => {
@@ -113,12 +113,18 @@ describe("TransactionRepository", () => {
                 creditAmount: 0,
                 debitAmount: 0.111111,
                 category: TransactionCategory.Other,
+            },            
+            {
+                bankAccountId,
+                creditAmount: 0,
+                debitAmount: 0.111111,
+                category: TransactionCategory.Other,
             },
         ];
 
         await AppDataSource.manager.insert("Transaction", seededTransactions);
         const sum = await AppDataSource.manager.withRepository(TransactionRepository).sumDebitTransactions(bankAccountId);
-        expect(sum.isEqualTo(0.222222));
+        expect(sum.isEqualTo(0.333333));
     });
 
     it("should sum debit transactions", async () => {
