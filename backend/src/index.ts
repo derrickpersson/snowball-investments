@@ -1,27 +1,21 @@
+import { AuthController } from "./auth/controller";
 import { AppDataSource } from "./data-source";
-import { User } from "./entity/User";
 import * as express from 'express';
+import "./global";
 
 AppDataSource.initialize().then(async () => {
-
-    console.log("Inserting a new user into the database...")
-    const user = new User()
-    user.firstName = "Timber"
-    user.lastName = "Saw"
-    user.age = 25
-    await AppDataSource.manager.save(user)
-    console.log("Saved a new user with id: " + user.id)
-
-    console.log("Loading users from the database...")
-    const users = await AppDataSource.manager.find(User)
-    console.log("Loaded users: ", users)
-    
-    const app = express()
+    const app: express.Application = express()
     const port = 3000
 
     app.get('/', (req, res) => {
         res.send('Hello World!')
     });
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
+    
+    // Register routes:
+    app.use('/auth', new AuthController().router);
 
     app.listen(port, () => {
         console.log(`Example app listening at http://localhost:${port}`)
