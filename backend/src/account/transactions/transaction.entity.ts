@@ -13,7 +13,10 @@ export enum TransactionCategory {
 @Entity()
 export class Transaction extends Timestamps {
     @PrimaryGeneratedColumn("uuid")
-    id: number;
+    id: string;
+
+    @Column()
+    vendorName: string;
 
     @Column({ default: 0, type: "double precision" })
     debitAmount: number;

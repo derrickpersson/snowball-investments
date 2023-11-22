@@ -18,5 +18,14 @@ export const TransactionRepository = AppDataSource.getRepository(Transaction).ex
             .getRawOne();
         const sumResult = sumQuery.sum;
         return new BigNumber(sumResult);
+    },
+
+    findRecentTransactions: async function(bankAccountId: string): Promise<Transaction[]> {
+        const recentTransactions = await this.createQueryBuilder("transaction")
+            .where("transaction.bankAccountId = :bankAccountId", { bankAccountId })
+            .orderBy("transaction.createdAt", "DESC")
+            .limit(10)
+            .getMany();
+        return recentTransactions;
     }
 });
