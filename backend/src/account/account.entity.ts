@@ -4,12 +4,16 @@ import { Timestamps } from '../common/timestamps.entity';
 import { Transaction } from './transactions/transaction.entity';
 
 export enum AccountType {
-    Chequing = "Chequing",
-    Savings = "Savings",
-    Credit = "Credit",
+    Chequing = "chequing",
+    Savings = "savings",
     TFSA = "TFSA",
     RRSP = "RRSP",
-    NonRegistered = "Non-Registered"
+    NonRegistered = "non-registered"
+}
+
+export enum AccountCategory {
+    Credit = "credit",
+    Debit = "debit",
 }
 
 @Entity()
@@ -39,8 +43,11 @@ export class BankAccount extends Timestamps {
     @JoinColumn({ name: "accountHolderId" })
     accountHolder: User;
 
-    @Column()
+    @Column({ enum: AccountType, default: AccountType.Chequing })
     accountType: AccountType;
+
+    @Column({ enum: AccountCategory, default: AccountCategory.Debit })
+    accountCategory: AccountCategory;
 
     @OneToMany(() => Transaction, transaction => transaction.bankAccount)
     transactions: Transaction[];

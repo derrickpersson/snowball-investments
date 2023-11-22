@@ -1,5 +1,12 @@
-import { AppDataSource } from "../data-source";
+import { DataSource, DataSourceOptions } from "typeorm";
+import { databaseConfig } from "../data-source";
+
+export const TestDataSource = new DataSource({
+    ...databaseConfig,
+    database: "test",
+} as DataSourceOptions);
 
 export async function mochaGlobalSetup() {
-    this.dataSource = await AppDataSource.initialize()
+    this.dataSource = await TestDataSource.initialize();
+    await this.dataSource.runMigrations();
 }

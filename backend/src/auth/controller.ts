@@ -3,12 +3,11 @@ import { User } from './user.entity';
 import { AppDataSource } from '../data-source';
 import { configurePassportForJWT, issueJWT } from './jwt';
 import { authMiddleware } from './middleware';
+import { BaseController } from '../common/base.controller';
 
-export class AuthController {
-    public router: Router;
+export class AuthController extends BaseController {
     constructor() {
-        this.router = Router();
-        this.routes();
+        super();
         configurePassportForJWT();
     }
 
