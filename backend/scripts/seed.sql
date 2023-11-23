@@ -21,16 +21,16 @@ INSERT INTO public.bank_account (id, "accountNumber", "accountHolderId", "accoun
 ('b14a3de6-c81f-4180-b34d-8b446a8862a6', '87654321', '8724c852-d966-4d55-894c-9272ad863404', 'savings');
 
 -- Seed transactions for the example user
-INSERT INTO public.transaction ("bankAccountId", "vendorId", "creditAmount", "debitAmount", "category") VALUES
-('faeb42c7-e725-425c-894a-a2b27227f276', 7, 0, 3500.5, 'other'),
-('faeb42c7-e725-425c-894a-a2b27227f276', 1, 50.0, 0, 'dining'),
-('faeb42c7-e725-425c-894a-a2b27227f276', 2, 75.0, 0, 'dining'),
-('faeb42c7-e725-425c-894a-a2b27227f276', 3, 20.0, 0, 'dining' ),
-('faeb42c7-e725-425c-894a-a2b27227f276', 4, 15.0, 0, 'dining'),
-('faeb42c7-e725-425c-894a-a2b27227f276', 5, 100.0, 0, 'dining'),
-('b14a3de6-c81f-4180-b34d-8b446a8862a6', 7, 0, 5000.5, 'other'),
-('b14a3de6-c81f-4180-b34d-8b446a8862a6', 1, 30.0, 0, 'dining'),
-('b14a3de6-c81f-4180-b34d-8b446a8862a6', 2, 45.0, 0, 'dining'),
-('b14a3de6-c81f-4180-b34d-8b446a8862a6', 3, 60.0, 0, 'dining'),
-('b14a3de6-c81f-4180-b34d-8b446a8862a6', 4, 10.0, 0, 'dining'),
-('b14a3de6-c81f-4180-b34d-8b446a8862a6', 5, 25.0, 0, 'dining');
+INSERT INTO public.transaction ("bankAccountId", "vendorId", "creditAmount", "debitAmount", "category", "createdAt") VALUES
+('faeb42c7-e725-425c-894a-a2b27227f276', 7, 0, 3500.5, 'other', '2023-11-15T01:27:22.038Z'),
+('faeb42c7-e725-425c-894a-a2b27227f276', 1, 50.0, 0, 'dining', '2023-11-16T01:27:22.038Z'),
+('faeb42c7-e725-425c-894a-a2b27227f276', 2, 75.0, 0, 'dining', '2023-11-17T01:27:22.038Z'),
+('faeb42c7-e725-425c-894a-a2b27227f276', 3, 20.0, 0, 'dining', '2023-11-17T01:27:22.038Z' ),
+('faeb42c7-e725-425c-894a-a2b27227f276', 4, 15.0, 0, 'dining', '2023-11-18T01:27:22.038Z'),
+('faeb42c7-e725-425c-894a-a2b27227f276', 5, 100.0, 0, 'dining', '2023-11-20T01:27:22.038Z'),
+('b14a3de6-c81f-4180-b34d-8b446a8862a6', 7, 0, 5000.5, 'other', '2023-11-20T01:27:22.038Z'),
+('b14a3de6-c81f-4180-b34d-8b446a8862a6', 1, 30.0, 0, 'dining', '2023-11-21T01:27:22.038Z'),
+('b14a3de6-c81f-4180-b34d-8b446a8862a6', 2, 45.0, 0, 'dining', '2023-11-21T01:27:22.038Z'),
+('b14a3de6-c81f-4180-b34d-8b446a8862a6', 3, 60.0, 0, 'dining', '2023-11-21T01:27:22.038Z'),
+('b14a3de6-c81f-4180-b34d-8b446a8862a6', 4, 10.0, 0, 'dining', '2023-11-21T01:27:22.038Z'),
+('b14a3de6-c81f-4180-b34d-8b446a8862a6', 5, 25.0, 0, 'dining', '2023-11-24T01:27:22.038Z');

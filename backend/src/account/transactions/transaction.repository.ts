@@ -21,11 +21,15 @@ export const TransactionRepository = AppDataSource.getRepository(Transaction).ex
     },
 
     findRecentTransactions: async function(bankAccountId: string): Promise<Transaction[]> {
-        const recentTransactions = await this.createQueryBuilder("transaction")
-            .where("transaction.bankAccountId = :bankAccountId", { bankAccountId })
-            .orderBy("transaction.createdAt", "DESC")
-            .limit(10)
-            .getMany();
-        return recentTransactions;
+        return await this.find({
+            where: {
+                bankAccountId
+            },
+            relations: ["vendor"],
+            order: {
+                createdAt: "DESC"
+            },
+            limit: 10,
+        });
     }
 });

@@ -11,3 +11,20 @@ export interface Account {
     type: string;
     balance: number;
 }
+
+export interface Transaction {
+    id: string;
+    debitAmount: number;
+    creditAmount: number;
+    description: string;
+    category: string;
+    bankAccountId: string;
+    vendorId: number;
+    vendor: Vendor;
+}
+
+export interface Vendor {
+    id: number;
+    name: string;
+    logoURL: string;
+}
