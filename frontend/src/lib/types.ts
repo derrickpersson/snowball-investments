@@ -10,6 +10,7 @@ export interface Account {
     id: string;
     type: string;
     balance: number;
+    recentTransactions: Transaction[];
 }
 
 export interface Transaction {
@@ -21,6 +22,7 @@ export interface Transaction {
     bankAccountId: string;
     vendorId: number;
     vendor: Vendor;
+    createdAt: string;
 }
 
 export interface Vendor {
