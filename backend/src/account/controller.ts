@@ -9,7 +9,11 @@ import { accountPermissionMiddleware } from "./middleware";
 export class AccountController extends BaseController {
     static list = async (req: Request, res: Response) => {
         const accounts = await AppDataSource.manager.getRepository(BankAccount).findBy({ accountHolderId: req.authorizedUser.id });
-        return res.status(200).send({ accounts });
+        const accountRepresentations = await Promise.all(accounts.map(async account => {
+            const accountService = new DebitAccountService();
+            return await accountService.getRepresentation(account.id);
+        }));
+        return res.status(200).send({ accounts: accountRepresentations });
     }
 
     static get = async (req: Request, res: Response) => {
