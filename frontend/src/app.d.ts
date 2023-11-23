@@ -1,10 +1,13 @@
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
 declare global {
+	/// <reference types="stripe-event-types" />
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
+		interface Locals {
+			user: User | null;
+		}
+		interface PageData {
+			user: User | null;
+		}
 		// interface Platform {}
 	}
 }

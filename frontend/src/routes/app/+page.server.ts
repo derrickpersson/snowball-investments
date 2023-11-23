@@ -12,6 +12,6 @@ export const load: PageServerLoad = async (event: PageServerLoadEvent) => {
     });
 
     return {
-        accounts: resp.json(),
+        accounts: resp.json().then(({ accounts }) => accounts),
     };    
 }

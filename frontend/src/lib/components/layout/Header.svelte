@@ -3,7 +3,7 @@
 	import Logo from "./Logo.svelte";
 	import { PUBLIC_BACKEND_API_URL } from '$env/static/public';
 	import { getContext } from 'svelte';
-
+	import { goto } from '$app/navigation';
 
     const userContext = getContext("user");
 
@@ -13,6 +13,7 @@
         });
         if(response.ok) {
             userContext.set(null);
+            await goto('/');
         }
     }
 

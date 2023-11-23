@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { BankAccount } from "./account.entity";
+import { AccountType, BankAccount } from "./account.entity";
 import { TransactionRepresentation } from "./transactions/types";
 
 export interface IBankAccountService {
@@ -8,6 +8,14 @@ export interface IBankAccountService {
 }
 
 export interface AccountListItemRepresentation extends BankAccount{
+}
+
+export interface NewAccount {
+    accountType: AccountType;
+    accountHolderId: string;
+    accountNumber: string;
+    branchNumber?: string;
+    institutionNumber?: string;
 }
 
 
