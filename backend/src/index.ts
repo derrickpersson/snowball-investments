@@ -29,7 +29,7 @@ AppDataSource.initialize().then(async () => {
     app.use('/account', new AccountController().router);
     
     // Register account specific routes:
-    app.use('/account/:accountId/transactions', new TransactionController().router);
+    app.use('/account/:accountId/transaction', new TransactionController().router);
 
     app.listen(port, () => {
         console.log(`Example app listening at http://localhost:${port}`)
