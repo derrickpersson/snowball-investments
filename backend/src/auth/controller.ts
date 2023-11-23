@@ -17,11 +17,28 @@ export class AuthController extends BaseController {
         let user = await userRepository.findOneBy({ email, password });
 
         if (!user) {
-            return res.status(401).send("User not found");
+            return res.status(401).send({ error: "User not found" });
         }
 
+        /**
+         * Omit password when returning the user
+         */
+        const userRepresentation = {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+        };
+
         let token = issueJWT(user.id);
-        return res.status(200).send({ token });
+        return res
+            .cookie('jwt', token, { 
+                maxAge: 900000,
+                path: "/",
+                domain: "localhost",
+            })
+            .status(200)
+            .send({ user: userRepresentation });
     };
 
     static register = async (req: Request, res: Response) => {
@@ -37,24 +54,57 @@ export class AuthController extends BaseController {
         try {
             const registeredUser = await userRepository.save(user);
             let token = issueJWT(registeredUser.id);
-            return res.status(200).send({ token });
+
+            /**
+             * Omit password when returning the user
+             */
+            const userRepresentation = {
+                id: registeredUser.id,
+                email: registeredUser.email,
+                firstName: registeredUser.firstName,
+                lastName: registeredUser.lastName,
+            };
+
+            return res
+                .cookie('jwt', token, { 
+                    maxAge: 900000,
+                    path: "/",
+                    domain: "localhost",
+                })
+                .status(200)
+                .send({
+                    user: userRepresentation,
+                });
         } catch (e) {
             console.error(e);
-            return res.status(409).send("email already in use");
+            return res.status(409).send({ error: "email already in use" });
         }
     };
 
+    static logout = (req, res) => {
+        if (req.cookies['jwt']) {
+            res
+                .clearCookie('jwt')
+                .sendStatus(200)
+        } else {
+            res.status(401).json({
+                error: 'Invalid jwt'
+            })
+        }
+    }
+
     static currentUser = async (req: Request, res: Response) => {
         if (req.authorizedUser) {
-            return res.status(200).send({ userId: req.authorizedUser.id });
+            return res.status(200).send({ user: req.authorizedUser });
         }
 
-        res.status(401).send("Unauthorized");
+        res.status(401).send({ error: "Unauthorized" });
     };
 
     routes() {
         this.router.post('/login', AuthController.login);
         this.router.post('/register', AuthController.register);
         this.router.get('/current-user', authMiddleware, AuthController.currentUser);
+        this.router.get('/logout', AuthController.logout);
     }
 }

@@ -4,7 +4,7 @@ export const authMiddleware = (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
         if (err || !user) {
             err  && console.error(err);
-            return res.status(401).send("Unauthorized");
+            return res.status(401).send({ error: "Unauthorized" });
         }
         req.authorizedUser = user;
         next();

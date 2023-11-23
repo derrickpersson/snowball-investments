@@ -5,6 +5,8 @@ import "./global";
 import { accountPermissionMiddleware } from "./account/middleware";
 import { AccountController } from "./account/controller";
 import { TransactionController } from "./account/transactions/controller";
+import * as cookieParser from "cookie-parser";
+import * as cors from "cors";
 
 AppDataSource.initialize().then(async () => {
     const app: express.Application = express()
@@ -16,6 +18,11 @@ AppDataSource.initialize().then(async () => {
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
+    app.use(cookieParser());
+    app.use(cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+    }));
     
     // Register routes:
     app.use('/auth', new AuthController().router);

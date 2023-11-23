@@ -3,10 +3,22 @@
     import type { PageData } from './$types';
     import { superForm } from 'sveltekit-superforms/client';
 	import Input from "$lib/components/form/Input.svelte";
-    
+	import { goto } from "$app/navigation";
+	import { getContext } from "svelte";
+	import type { Writable } from "svelte/store";
 
     export let data: PageData;
-    const { form, errors, enhance, delayed } = superForm(data.form);
+
+    const userContext = getContext("user") as Writable<any | null>;
+
+    const { form, errors, enhance, delayed } = superForm(data.form, {
+        onResult: async ({ result }) => {
+            if(result.type === "success") {
+                userContext.set(result.data?.user);
+                await goto("/app");
+            }
+        }
+    });
 
     let isFocused: boolean = true;
 </script>

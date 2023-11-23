@@ -3,11 +3,27 @@
     import type { PageData } from './$types';
     import { superForm } from 'sveltekit-superforms/client';
 	import Input from "$lib/components/form/Input.svelte";
+	import type { Writable } from "svelte/store";
+	import { getContext } from "svelte";
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
 
     export let data: PageData;
-    const { form, errors, enhance, delayed } = superForm(data.form);
+
+    const userContext = getContext("user") as Writable<any | null>;
+
+    const { form, errors, enhance, delayed } = superForm(data.form, {
+        onResult: async ({ result }) => {
+            if(result.type === "success") {
+                userContext.set(result.data?.user);
+                await goto("/app");
+            }
+        }
+    });
 
     let isFocused: boolean = true;
+
+    $: $page.url.searchParams.has("invalidateSession") && userContext.set(null);
 </script>
 
 <div class="container mx-auto max-w-md px-2 flex flex-col gap-4">

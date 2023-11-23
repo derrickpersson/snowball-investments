@@ -9,7 +9,7 @@ export const accountPermissionMiddleware = async (req: Request, res: Response, n
     const count = await accountRepository.countBy({ id: accountId, accountHolderId: authorizedUserId });
     
     if(count === 0) {
-        return res.status(403).send("Unauthorized access to the account");
+        return res.status(403).send({ error: "Unauthorized access to the account" });
     }
 
     next();

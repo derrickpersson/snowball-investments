@@ -1,7 +1,13 @@
 <script lang="ts">
     import Header from "$lib/components/layout/Header.svelte";
-import "../app.pcss";
+	import { writable } from "svelte/store";
+    import "../app.pcss";
     import { AppShell } from '@skeletonlabs/skeleton';
+	import { setContext } from "svelte";
+
+    const userStore = writable(null);
+    const userContext = setContext("user", userStore);
+    
 </script>
 
 <AppShell>

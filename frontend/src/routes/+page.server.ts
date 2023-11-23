@@ -27,20 +27,22 @@ export const actions: Actions = {
         });
 
         if(response.status !== 200) {
-            const { message } = await response.json();
+            const { error } = await response.json();
             return fail(400, {
-                form: {
-                    ...form,
-                    errors: {
-                        ...form.errors,
-                        email: message
-                    }
-                }
+                form,
+                message: error,
             });
         }
+        
+        if(response.headers.get("set-cookie")) {
+            event.cookies.set("jwt", response.headers.get("set-cookie")!);
+        }
 
-        // TODO: save token & use in authentication header
-	
-		throw redirect(303, "/app");
+        const { user } = await response.json();
+
+        return {
+            form,
+            user,
+        };
 	}
 };
