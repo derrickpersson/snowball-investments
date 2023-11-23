@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Timestamps } from "../../common/timestamps.entity";
 import { BankAccount } from "../account.entity";
+import { Vendor } from "./vendor.entity";
 
 export enum TransactionCategory {
     Dining = "dining",
@@ -16,7 +17,11 @@ export class Transaction extends Timestamps {
     id: string;
 
     @Column()
-    vendorName: string;
+    vendorId: number;
+
+    @ManyToOne(() => Vendor, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "vendorId" })
+    vendor: Vendor;
 
     @Column({ default: 0, type: "double precision" })
     debitAmount: number;

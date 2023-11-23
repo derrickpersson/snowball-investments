@@ -46,6 +46,7 @@
       "migration:generate": "npm run typeorm -- migration:generate ./src/migration/${npm_config_migration_name:-Placeholder} -d ./src/data-source.ts",
       "migration:run": "npm run typeorm -- migration:run -d ./src/data-source.ts",
       "migration:revert": "npm run typeorm -- migration:revert -d ./src/data-source.ts",
+      "db:reset": "npm run typeorm -- schema:drop -d ./src/data-source.ts && npm run typeorm -- migration:run -d ./src/data-source.ts",
       "test": "mocha"
    }
 }
