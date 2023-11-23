@@ -10,6 +10,7 @@ export interface Account {
     id: string;
     type: string;
     balance: number;
+    category: "credit" | "debit";
     recentTransactions: Transaction[];
 }
 

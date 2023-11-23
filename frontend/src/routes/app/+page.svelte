@@ -8,6 +8,7 @@
 	import { capitalize } from "$lib/strings";
     import { TabGroup, Tab, TabAnchor } from '@skeletonlabs/skeleton';
 	import Balance from "$lib/components/account/Balance.svelte";
+    import TransactionItem from "$lib/components/transaction/Item.svelte";
 
 
     export let data: PageData;
@@ -47,7 +48,7 @@
                         
                         {#each (Object.entries(accountTransactions) || []) as groupedTransactions}
                         <div>
-                            <h6 class="text-sm">
+                            <h6 class="text-sm px-2 pb-1">
                                 {new Date(groupedTransactions[0]).toLocaleDateString(undefined, {
                                     weekday: 'long',
                                     month: 'long',
@@ -55,20 +56,10 @@
                                 })}
                             </h6>
                             {#each (groupedTransactions[1] || []) as transaction}
-                                <div class="flex flex-row justify-between w-full">
-                                    <div class="flex flex-row gap-4 py-2 items-center">
-                                        {#if transaction.vendor.logoURL}
-                                            <img src={transaction.vendor.logoURL} alt={transaction.vendor.name} class="w-10 h-10" />
-                                        {/if}
-                                        <div>{transaction.vendor.name}</div>
-                                    </div>
-                                    <div class="flex flex-row items-center">
-                                        <Amount 
-                                            accountType={selectedAccount.category}
-                                            transaction={transaction}
-                                        />
-                                    </div>
-                                </div>
+                                <TransactionItem 
+                                    transaction={transaction} 
+                                    selectedAccount={selectedAccount}
+                                />
                             {/each}
                             </div>
                         {/each}

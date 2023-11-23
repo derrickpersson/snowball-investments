@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Transaction } from "$lib/types";
 
-    export let accountType: "credit" | "debit";
+    export let accountType: "credit" | "debit" = "debit";
     export let transaction: Transaction;
 
     let amount: number = 0;
