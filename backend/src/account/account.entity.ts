@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, Unique } from 'typeorm';
 import { User } from '../auth/user.entity';
 import { Timestamps } from '../common/timestamps.entity';
 import { Transaction } from './transactions/transaction.entity';
@@ -17,6 +17,7 @@ export enum AccountCategory {
 }
 
 @Entity()
+@Unique(["accountNumber", "branchNumber", "institutionNumber"])
 export class BankAccount extends Timestamps {
     @PrimaryGeneratedColumn("uuid")
     id: string;

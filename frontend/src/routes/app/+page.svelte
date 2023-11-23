@@ -2,13 +2,15 @@
 	import type { PageData } from "./$types";
 
 
-    let data: PageData;
+    export let data: PageData;
+
+    $: console.log(data);
 </script>
 
 <h1>HOME PAGE!</h1>
 
 {#if data?.accounts}
     {#each (data?.accounts || []) as account}
-        <p>{account.name}</p>
+        <p>{account.accountNumber}</p>
     {/each}
 {/if}

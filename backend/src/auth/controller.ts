@@ -4,6 +4,7 @@ import { AppDataSource } from '../data-source';
 import { configurePassportForJWT, issueJWT } from './jwt';
 import { authMiddleware } from './middleware';
 import { BaseController } from '../common/base.controller';
+import { RegistrationService } from './registration.server';
 
 export class AuthController extends BaseController {
     constructor() {
@@ -44,7 +45,6 @@ export class AuthController extends BaseController {
     static register = async (req: Request, res: Response) => {
         let { email, password, firstName, lastName } = req.body;
         let user = new User();
-        let userRepository = AppDataSource.manager.getRepository(User);
 
         user.email = email;
         user.password = password;
@@ -52,7 +52,8 @@ export class AuthController extends BaseController {
         user.lastName = lastName;
 
         try {
-            const registeredUser = await userRepository.save(user);
+            const registrationService = new RegistrationService();
+            const registeredUser = await registrationService.registerUser(user);
             let token = issueJWT(registeredUser.id);
 
             /**

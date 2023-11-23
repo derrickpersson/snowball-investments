@@ -3,7 +3,7 @@ import { BankAccount } from './account.entity';
 import { TransactionRepository } from "./transactions/transaction.repository";
 import BigNumber from "bignumber.js";
 import { AppDataSource } from '../data-source';
-import { IBankAccountService } from './types';
+import { IBankAccountService, NewAccount } from './types';
 
 export class DebitAccountService implements IBankAccountService {
     private bankAccountRepository: Repository<BankAccount>;
@@ -13,6 +13,11 @@ export class DebitAccountService implements IBankAccountService {
     ) {
         this.transactionRepository = (manager || AppDataSource.manager).withRepository(TransactionRepository);
         this.bankAccountRepository = (manager || AppDataSource.manager).getRepository(BankAccount);
+    }
+
+    async createAccount(account: NewAccount): Promise<BankAccount> {
+        const newAccount = await this.bankAccountRepository.save(account);
+        return newAccount;
     }
 
     async getBalance(accountId: string): Promise<BigNumber> {
