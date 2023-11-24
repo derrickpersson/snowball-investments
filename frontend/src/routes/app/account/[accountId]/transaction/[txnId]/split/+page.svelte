@@ -69,7 +69,7 @@
         backLocation={$navigating?.from?.url.pathname}
     />
     <div class="flex flex-col gap-2 mt-4">
-        {#each (contacts || []) as contact}
+        {#each (contacts || []) as contact (contact.id)}
             <ContactItem 
                 contact={contact}
                 label={splitAmounts[contact.id]}

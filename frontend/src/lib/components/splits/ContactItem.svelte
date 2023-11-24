@@ -11,14 +11,14 @@
 
     const colorHash = new ColorHash();
     const hash = colorHash.hex(contact.email);
-
-    $: onSelect(contact, checked);
-
 </script>
 
 <button
     class="bg-surface-500 w-full rounded-lg px-3 py-2 flex flex-row gap-4 items-center justify-between hover:bg-surface-600 cursor-pointer"
-    on:click={() => checked = !checked}
+    on:click={() => {
+        checked = !checked
+        onSelect(contact, checked);
+    }}
 >
     <div class="flex flex-row gap-4 items-center">
         <div class={`rounded-full w-10 h-10 flex items-center justify-center`} style={`background-color: ${hash};`}>
@@ -35,6 +35,13 @@
                 size="sm"
             />
         {/if}
-        <input type="checkbox" class="checkbox h-5 w-5" bind:checked={checked} />
+        <input 
+            type="checkbox" 
+            class="checkbox h-5 w-5" 
+            bind:checked={checked} 
+            on:change={() => {
+                onSelect(contact, checked);
+            }}
+        />
     </label>
 </button>
