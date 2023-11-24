@@ -12,6 +12,7 @@
 	import { superForm } from "sveltekit-superforms/client";
     import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
     import SuccessMessage from "$lib/components/splits/Success.html?raw";
+	import { getInitialAmounts, getSplitSharesArray, calculateRequestedTotal, getInitialSelected, hasExactMembers, getEvenShare } from "$lib/components/splits/utils";
 
     const toastStore = getToastStore();
 
@@ -38,13 +39,35 @@
     $form.type = "evenly";
 
     const selectedContacts = writable([]) as Writable<Contact[]>;
-    $: selectedContacts.update(() => {
-        if(split?.splitShares?.length) {
-            return split?.splitShares.map((s) => contacts.find((c) => c.id === s.contactId)) as Contact[];
-        } else {
-            return [];
-        }
-    });
+    $: selectedContacts.update(() => getInitialSelected(contacts, split?.splitShares || []));
+
+    let totalSelected: number = 0;
+    $: {
+        totalSelected = $selectedContacts.length + 1; // Include current user in the split
+    }
+
+    let splitAmounts: { [contactId: string]: number } = {};
+    $: {
+        splitAmounts = getInitialAmounts(split?.splitShares);
+    }
+
+    let requestedTotal: number = 0;
+    $: {
+        splitAmounts = $selectedContacts.reduce((acc, contact) => {
+            // If all contacts are selected from the existing split shares, use those split share amounts
+            if(hasExactMembers($selectedContacts, split?.splitShares)) {
+                acc[contact.id] = split?.splitShares.find((s) => s.contactId === contact.id)?.amount || 0;
+                return acc;
+            }
+            acc[contact.id] = getEvenShare(transaction?.creditAmount, totalSelected);
+            return acc;
+        }, {} as { [contactId: string]: number });
+        requestedTotal = calculateRequestedTotal(splitAmounts);
+    }
+    
+    $: {
+        $form.splitShares = getSplitSharesArray(splitAmounts);
+    }
 
     const handleSelection = (contact: Contact, checked: boolean) => {
         selectedContacts.update((contacts: Contact[]) => {
@@ -54,41 +77,6 @@
                 return contacts.filter((c) => c.id !== contact.id);
             }
         });
-    }
-
-    let totalSelected: number = 0;
-    $: {
-        totalSelected = $selectedContacts.length + 1;
-    }
-
-
-    let splitAmounts: { [contactId: string]: number } = {};
-    $: {
-        splitAmounts = split?.splitShares?.reduce((acc, share) => {
-            acc[share.contactId] = share.amount;
-            return acc;
-        }, {} as { [contactId: string]: number }) || {};
-    }
-
-    let requestedTotal: number = 0;
-    $: {
-        splitAmounts = $selectedContacts.reduce((acc, contact) => {
-            // If all contacts are selected from the existing split shares, use those split share amounts
-            if(split?.splitShares.length === $selectedContacts.length && split?.splitShares.map(s => s.contactId).every((id) => $selectedContacts.find((c) => c.id === id))) {
-                acc[contact.id] = split?.splitShares.find((s) => s.contactId === contact.id)?.amount || 0;
-                return acc;
-            }
-            acc[contact.id] = transaction.creditAmount / totalSelected;
-            return acc;
-        }, {} as { [contactId: string]: number });
-        requestedTotal = Number(Object.values(splitAmounts).reduce((acc, amount) => acc + amount, 0).toPrecision(10));
-    }
-    
-    $: {
-        $form.splitShares = Object.entries(splitAmounts).map(([contactId, amount]) => ({
-            contactId,
-            amount
-        }));
     }
 
 </script>
