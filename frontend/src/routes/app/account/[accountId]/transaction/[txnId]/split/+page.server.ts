@@ -9,11 +9,12 @@ export const load = (async () => {
 });
 
 export const actions: Actions = {
-	default: async (event) => {
+	createSplit: async (event) => {
 		const form = await superValidate(event, splitSchema);
 		if (!form.valid) {
 			return fail(400, {
-				form
+				form,
+                message: "Check your inputs and try again!"
 			});
 		}
 		// Submit the form to the backend

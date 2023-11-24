@@ -25,6 +25,7 @@ export class SplitController extends BaseController {
                 if(existingSplit) {
                     await splitsRepo.remove(existingSplit);
                 }
+                console.log("TYPE:", req.body.type);
                 const split = await splitsRepo.save({
                     transactionId: req.body.transactionId,
                     type: req.body.type,

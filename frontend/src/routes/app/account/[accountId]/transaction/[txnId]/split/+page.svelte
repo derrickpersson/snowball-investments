@@ -1,44 +1,26 @@
 <script lang="ts">
     import type { PageData, PageServerData } from "./$types";
 	import ContactItem from "$lib/components/splits/ContactItem.svelte";
-	import { writable, type Writable } from "svelte/store";
+	import type { Writable } from "svelte/store";
 	import DetailedAmount from "$lib/components/transaction/DetailedAmount.svelte";
     import AdjustIcon from "$lib/assets/adjust.svg?raw";
     import MoneyIcon from "$lib/assets/cash.svg?raw";
 	import ActionButton from "$lib/components/ActionButton.svelte";
-	import type { Contact } from "$lib/types";
+	import { SplitType, type Contact, type Split } from "$lib/types";
 	import { superForm } from "sveltekit-superforms/client";
-    import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
-    import SuccessMessage from "$lib/components/splits/Success.html?raw";
-	import { getInitialAmounts, getSplitSharesArray, calculateRequestedTotal, getInitialSelected, hasExactMembers, getEvenShare } from "$lib/components/splits/utils";
+    import { getToastStore } from '@skeletonlabs/skeleton';
+	import { getInitialAmounts, getSplitSharesArray, calculateRequestedTotal, hasExactMembers, getEvenShare, toastHandler } from "$lib/components/splits/utils";
+	import { getContext } from "svelte";
+	import { page } from "$app/stores";
 
     const toastStore = getToastStore();
 
     export let data: PageData & PageServerData;
 
-    $: ({ contacts, transaction, split } = data);
+    $: ({ contacts, transaction } = data);
 
-    const { form, enhance } = superForm(data.form, {
-        dataType: 'json',
-        taintedMessage: null,
-        onResult: async ({ result }) => {
-            if(result.type === "success") {
-                const t: ToastSettings = {
-                    message: SuccessMessage,
-                    background: 'variant-filled-primary',
-                    classes: "text-on-primary-token rounded-lg w-full",
-                    hideDismiss: true,
-                    timeout: 3000
-                };
-                toastStore.trigger(t);
-            }
-        }
-    });
-    $: $form.transactionId = transaction?.id;
-    $form.type = "evenly";
-
-    const selectedContacts = writable([]) as Writable<Contact[]>;
-    $: selectedContacts.update(() => getInitialSelected(contacts, split?.splitShares || []));
+    const selectedContacts = getContext("selectedContacts") as Writable<Contact[]>;
+    const split = getContext("splitStore") as Writable<Split>;
 
     let totalSelected: number = 0;
     $: {
@@ -47,15 +29,15 @@
 
     let splitAmounts: { [contactId: string]: number } = {};
     $: {
-        splitAmounts = getInitialAmounts(split?.splitShares);
+        splitAmounts = getInitialAmounts($split?.splitShares);
     }
 
     let requestedTotal: number = 0;
     $: {
         splitAmounts = $selectedContacts.reduce((acc, contact) => {
-            // If all contacts are selected from the existing split shares, use those split share amounts
-            if(hasExactMembers($selectedContacts, split?.splitShares)) {
-                acc[contact.id] = split?.splitShares.find((s) => s.contactId === contact.id)?.amount || 0;
+            // If all contacts are selected from the current split shares, use those split share amounts
+            if(hasExactMembers($selectedContacts, $split?.splitShares)) {
+                acc[contact.id] = $split?.splitShares.find((s) => s.contactId === contact.id)?.amount || 0;
                 return acc;
             }
             acc[contact.id] = getEvenShare(transaction?.creditAmount, totalSelected);
@@ -63,6 +45,17 @@
         }, {} as { [contactId: string]: number });
         requestedTotal = calculateRequestedTotal(splitAmounts);
     }
+
+    const { form, enhance } = superForm(data.form, {
+        dataType: 'json',
+        taintedMessage: null,
+        onResult: async ({ result }) => {
+            const toastSettings = toastHandler(result);
+            toastSettings && toastStore.trigger(toastSettings);
+        }
+    });
+    $: $form.transactionId = transaction?.id;
+    $form.type = SplitType.Evenly;
     
     $: {
         $form.splitShares = getSplitSharesArray(splitAmounts);
@@ -101,9 +94,9 @@
         <ActionButton
             icon={AdjustIcon}
             title="Adjust split"
-            href="./adjust"
+            href={`/app/account/${$page.params.accountId}/transaction/${$page.params.txnId}/split/adjust`}
         />
-        <form method="POST" use:enhance>
+        <form method="POST" action="?/createSplit" use:enhance>
             <ActionButton
                 type="submit"
                 icon={MoneyIcon}
