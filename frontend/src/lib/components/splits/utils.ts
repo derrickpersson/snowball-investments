@@ -14,25 +14,7 @@ export const getInitialSelected = (contacts: Contact[], splitShares: SplitShare[
     }
 }
 
-export const getInitialAmounts = (splitShares: SplitShare[] | undefined): { [contactId: string]: number } => {
-    return splitShares?.reduce((acc, share) => {
-        acc[share.contactId] = share.amount;
-        return acc;
-    }, {} as { [contactId: string]: number }) || {};
-}
-
-export const getSplitSharesArray = (splitAmounts: { [contactId: string]: number }) => {
-    return Object.entries(splitAmounts).map(([contactId, amount]) => ({
-        contactId,
-        amount
-    }));
-}
-
-export const calculateRequestedTotal = (splitAmounts: { [contactId: string]: number }) => {
-    return Number(Object.values(splitAmounts).reduce((acc, amount) => acc + amount, 0).toPrecision(10))
-};
-
-export const calculateRequestedTotalFromSplitShares = (type: SplitType, transactionAmount: number, splitShares: SplitShare[]) => {
+export const calculateRequestedTotalFromSplitShares = (type: SplitType, transactionAmount: number, splitShares: SplitShare[] = []) => {
     switch(type) {
         case SplitType.Percentage:
             return Number(splitShares.reduce((acc, share) => acc + ((share.amount * transactionAmount) / 100), 0).toPrecision(10));
@@ -43,13 +25,38 @@ export const calculateRequestedTotalFromSplitShares = (type: SplitType, transact
     }
 }
 
-
-export const hasExactMembers = (contacts: Contact[], splitShares: SplitShare[] | undefined): boolean => {
-    return splitShares?.length === contacts.length && splitShares.map(s => s.contactId).every((id) => contacts.find((c) => c.id === id));
-}
-
 export const getEvenShare = (txnAmount: number, numberSelected: number) => {
     return txnAmount / numberSelected
+}
+
+export const getInitialSplit = (txnAmount: number, selectedContacts: Contact[]): Split => {
+    const splitShares = selectedContacts.map((c) => {
+        return {
+            contactId: c.id,
+            amount: getEvenShare(txnAmount, selectedContacts.length + 1)
+        }
+    });
+    return {
+        type: SplitType.Evenly,
+        splitShares
+    }
+}
+
+export const addSplitShare = (split: Split, contact: Contact, txnAmount: number) => {
+    const USER_AND_NEW_CONTACT = 2;
+    const newShares = split.splitShares.map((s, _, arr) => ({ ...s, amount: getEvenShare(txnAmount, arr.length + USER_AND_NEW_CONTACT)}))
+    const newShare: SplitShare = {
+        contactId: contact.id,
+        amount: getEvenShare(txnAmount, newShares.length + USER_AND_NEW_CONTACT)
+    };
+    split.splitShares = [...newShares, newShare];
+    return split;
+}
+
+export const removeSplitShare = (split: Split, contact: Contact, txnAmount: number) => {
+    const newSplitShares = split.splitShares.filter((s) => s.contactId !== contact.id).map((s, _, arr) => ({ ...s, amount: getEvenShare(txnAmount, arr.length + 1) }))
+    split.splitShares = newSplitShares;
+    return split;
 }
 
 export const updateSplitShares = (newType: SplitType, split: Split, txnAmount: number) => {

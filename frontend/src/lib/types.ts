@@ -46,13 +46,12 @@ export enum SplitType {
 }
 
 export interface Split {
-    id: number;
+    id?: number;
     type: SplitType;
     splitShares: SplitShare[];
 }
 
 export interface SplitShare {
-    id: number;
     contactId: string;
     amount: number;
 }

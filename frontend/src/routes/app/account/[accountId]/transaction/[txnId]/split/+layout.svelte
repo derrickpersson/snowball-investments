@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { getInitialSelected } from "$lib/components/splits/utils";
-	import type { Contact, Split } from "$lib/types";
 	import { writable, type Writable } from "svelte/store";
 	import type { LayoutData } from "./$types";
 	import { setContext } from "svelte";
+	import type { Contact, Split } from "$lib/types";
 
     export let data: LayoutData;
 
     $: ({ contacts, split } = data);
-
 
     const splitStore = writable(null) as Writable<Split | null>;
     $: splitStore.set(split);

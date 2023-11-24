@@ -7,8 +7,8 @@
 	import ActionButton from "$lib/components/ActionButton.svelte";
 	import { getContext } from "svelte";
 	import { SplitType, type Contact, type Split } from "$lib/types";
-	import { calculateRequestedTotalFromSplitShares, toastHandler, updateSplitShares } from "$lib/components/splits/utils";
-	import { RadioGroup, RadioItem, getToastStore, type ToastSettings } from "@skeletonlabs/skeleton";
+	import { calculateRequestedTotalFromSplitShares, getInitialSplit, toastHandler, updateSplitShares } from "$lib/components/splits/utils";
+	import { RadioGroup, RadioItem, getToastStore } from "@skeletonlabs/skeleton";
 	import type { LayoutData } from "../$types";
 	import { superForm } from "sveltekit-superforms/client";
 
@@ -20,15 +20,21 @@
     const selectedContacts = getContext("selectedContacts") as Writable<Contact[]>;
     const splitStore = getContext("splitStore") as Writable<Split>;
 
+    $: {
+        if(!$splitStore) {
+            splitStore.set(getInitialSplit(transaction.creditAmount, $selectedContacts));
+        }
+    }
+
     let type: SplitType = $splitStore?.type || SplitType.Evenly;
 
     let userShare = 0;
     $: {
-        if($splitStore.type === SplitType.Percentage) {
+        if($splitStore?.type === SplitType.Percentage) {
             // If it's type is percentage, we need to display a percentage
-            userShare = Number((((transaction.creditAmount - calculateRequestedTotalFromSplitShares(type, transaction.creditAmount, $splitStore.splitShares)) / transaction.creditAmount) * 100).toFixed(2));
+            userShare = Number((((transaction.creditAmount - calculateRequestedTotalFromSplitShares(type, transaction.creditAmount, $splitStore?.splitShares)) / transaction.creditAmount) * 100).toFixed(2));
         } else {
-            userShare = Number((transaction.creditAmount - calculateRequestedTotalFromSplitShares(type, transaction.creditAmount, $splitStore.splitShares)).toFixed(2));
+            userShare = Number((transaction.creditAmount - calculateRequestedTotalFromSplitShares(type, transaction.creditAmount, $splitStore?.splitShares)).toFixed(2));
         }
     }
 
@@ -42,9 +48,9 @@
     });
 
     $: $form.transactionId = transaction?.id;
-    $: $form.type = $splitStore.type;
+    $: $form.type = $splitStore?.type || SplitType.Evenly;
     $: {
-        $form.splitShares = $splitStore.splitShares;
+        $form.splitShares = $splitStore?.splitShares || [];
     }
 
 
@@ -66,7 +72,7 @@
 
     const handleSplitShareUpdate = (contactId: string, amount: number) => {
         splitStore.update((split) => {
-            const updatedSplitShares = split.splitShares.map((s) => {
+            const updatedSplitShares = split?.splitShares.map((s) => {
                 if(s.contactId === contactId) {
                     return {
                         ...s,
@@ -135,7 +141,7 @@
 <div class="flex flex-row justify-between items-center mt-4">
     <div class="text-lg">You're requesting</div>
     <div class="text-sm">
-        <DetailedAmount amount={calculateRequestedTotalFromSplitShares($splitStore.type, transaction.creditAmount, $splitStore.splitShares)} />
+        <DetailedAmount amount={calculateRequestedTotalFromSplitShares($splitStore?.type, transaction.creditAmount, $splitStore?.splitShares)} />
     </div>
 </div>
 <div class="flex flex-col gap-2">
