@@ -10,14 +10,6 @@ export async function load({ params, fetch }) {
         credentials: "include",
     });
 
-    const transactionResponse = fetch(`${PUBLIC_BACKEND_API_URL}/account/${params.accountId}/transaction/${params.txnId}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        credentials: "include",
-    });
-
     const splitsResponse = fetch(`${PUBLIC_BACKEND_API_URL}/account/${params.accountId}/transaction/${params.txnId}/splits`, {
         method: "GET",
         headers: {
@@ -28,7 +20,6 @@ export async function load({ params, fetch }) {
 
     return { 
         contacts: contactsResponse.then(r => r.json()).then(({ contacts }) => contacts) as Promise<Contact[]>,
-        transaction: transactionResponse.then(r => r.json()).then(({ transaction }) => transaction) as Promise<Transaction>,
         split: splitsResponse.then(r => r.json()).then(({ split }) => split) as Promise<Split | null>,
     };
 }

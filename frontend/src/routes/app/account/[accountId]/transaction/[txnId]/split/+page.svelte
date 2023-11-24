@@ -1,7 +1,5 @@
 <script lang="ts">
     import type { PageData, PageServerData } from "./$types";
-    import TransactionHeader from "$lib/components/transaction/Header.svelte";
-	import { navigating } from "$app/stores";
 	import ContactItem from "$lib/components/splits/ContactItem.svelte";
 	import { writable, type Writable } from "svelte/store";
 	import DetailedAmount from "$lib/components/transaction/DetailedAmount.svelte";
@@ -22,6 +20,7 @@
 
     const { form, enhance } = superForm(data.form, {
         dataType: 'json',
+        taintedMessage: null,
         onResult: async ({ result }) => {
             if(result.type === "success") {
                 const t: ToastSettings = {
@@ -81,40 +80,35 @@
 
 </script>
 
-<div class="container mx-auto max-w-md">
-    <TransactionHeader
-        transaction={transaction}
-        backLocation={$navigating?.from?.url.pathname}
-    />
-    <div class="flex flex-col gap-2 mt-4">
-        {#each (contacts || []) as contact (contact.id)}
-            <ContactItem 
-                contact={contact}
-                label={splitAmounts[contact.id]}
-                onSelect={handleSelection}
-                checked={!!$selectedContacts.find((c) => c.id === contact.id)}
-            />
-        {/each}
-    </div>
-    {#if totalSelected > 1}
-        <div class="flex flex-row justify-between items-center mt-4">
-            <div class="text-lg">You're requesting</div>
-            <div class="text-sm">
-                <DetailedAmount amount={requestedTotal} />
-            </div>
-        </div>
-        <div class="flex flex-col gap-2">
-            <ActionButton
-                icon={AdjustIcon}
-                title="Adjust split"
-            />
-            <form method="POST" use:enhance>
-                <ActionButton
-                    type="submit"
-                    icon={MoneyIcon}
-                    title="Request funds"
-                />
-            </form>
-        </div>
-    {/if}
+<div class="flex flex-col gap-2 mt-4">
+    {#each (contacts || []) as contact (contact.id)}
+        <ContactItem 
+            contact={contact}
+            label={splitAmounts[contact.id]}
+            onSelect={handleSelection}
+            checked={!!$selectedContacts.find((c) => c.id === contact.id)}
+        />
+    {/each}
 </div>
+{#if totalSelected > 1}
+    <div class="flex flex-row justify-between items-center mt-4">
+        <div class="text-lg">You're requesting</div>
+        <div class="text-sm">
+            <DetailedAmount amount={requestedTotal} />
+        </div>
+    </div>
+    <div class="flex flex-col gap-2">
+        <ActionButton
+            icon={AdjustIcon}
+            title="Adjust split"
+            href="./adjust"
+        />
+        <form method="POST" use:enhance>
+            <ActionButton
+                type="submit"
+                icon={MoneyIcon}
+                title="Request funds"
+            />
+        </form>
+    </div>
+{/if}
