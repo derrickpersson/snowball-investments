@@ -17,7 +17,7 @@ export const actions: Actions = {
 			});
 		}
 		// Submit the form to the backend
-        const response = await event.fetch(`${PUBLIC_BACKEND_API_URL}/splits`, {
+        const response = await event.fetch(`${PUBLIC_BACKEND_API_URL}/account/${event.params.accountId}/transaction/${event.params.transactionId}/splits`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

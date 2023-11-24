@@ -17,7 +17,7 @@
 
     export let data: PageData & PageServerData;
 
-    $: ({ contacts, transaction } = data);
+    $: ({ contacts, transaction, split } = data);
 
     const { form, enhance } = superForm(data.form, {
         dataType: 'json',
@@ -38,6 +38,13 @@
     $form.type = "evenly";
 
     const selectedContacts = writable([]) as Writable<Contact[]>;
+    $: selectedContacts.update(() => {
+        if(split?.splitShares?.length) {
+            return split?.splitShares.map((s) => contacts.find((c) => c.id === s.contactId)) as Contact[];
+        } else {
+            return [];
+        }
+    });
 
     const handleSelection = (contact: Contact, checked: boolean) => {
         selectedContacts.update((contacts: Contact[]) => {
@@ -46,7 +53,7 @@
             } else {
                 return contacts.filter((c) => c.id !== contact.id);
             }
-        })
+        });
     }
 
     let totalSelected: number = 0;
@@ -56,9 +63,21 @@
 
 
     let splitAmounts: { [contactId: string]: number } = {};
+    $: {
+        splitAmounts = split?.splitShares?.reduce((acc, share) => {
+            acc[share.contactId] = share.amount;
+            return acc;
+        }, {} as { [contactId: string]: number }) || {};
+    }
+
     let requestedTotal: number = 0;
     $: {
         splitAmounts = $selectedContacts.reduce((acc, contact) => {
+            // If all contacts are selected from the existing split shares, use those split share amounts
+            if(split?.splitShares.length === $selectedContacts.length && split?.splitShares.map(s => s.contactId).every((id) => $selectedContacts.find((c) => c.id === id))) {
+                acc[contact.id] = split?.splitShares.find((s) => s.contactId === contact.id)?.amount || 0;
+                return acc;
+            }
             acc[contact.id] = transaction.creditAmount / totalSelected;
             return acc;
         }, {} as { [contactId: string]: number });
@@ -85,6 +104,7 @@
                 contact={contact}
                 label={splitAmounts[contact.id]}
                 onSelect={handleSelection}
+                checked={!!$selectedContacts.find((c) => c.id === contact.id)}
             />
         {/each}
     </div>

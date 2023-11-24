@@ -6,8 +6,7 @@
     export let contact: any;
     export let label: number | undefined = undefined;
     export let onSelect: (contact: any, checked: boolean) => void;
-
-    let checked: boolean = false;
+    export let checked: boolean = false;
 
     const colorHash = new ColorHash();
     const hash = colorHash.hex(contact.email);

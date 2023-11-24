@@ -1,7 +1,8 @@
 import { PUBLIC_BACKEND_API_URL } from '$env/static/public';
+import type { Contact, Split, Transaction } from '$lib/types.js';
 
 export async function load({ params, fetch }) {
-    const contactsResponse = await fetch(`${PUBLIC_BACKEND_API_URL}/contact`, {
+    const contactsResponse = fetch(`${PUBLIC_BACKEND_API_URL}/contact`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -9,7 +10,15 @@ export async function load({ params, fetch }) {
         credentials: "include",
     });
 
-    const transactionResponse = await fetch(`${PUBLIC_BACKEND_API_URL}/account/${params.accountId}/transaction/${params.txnId}`, {
+    const transactionResponse = fetch(`${PUBLIC_BACKEND_API_URL}/account/${params.accountId}/transaction/${params.txnId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
+    });
+
+    const splitsResponse = fetch(`${PUBLIC_BACKEND_API_URL}/account/${params.accountId}/transaction/${params.txnId}/splits`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -18,8 +27,9 @@ export async function load({ params, fetch }) {
     });
 
     return { 
-        contacts: contactsResponse.json().then(({ contacts }) => contacts),
-        transaction: transactionResponse.json().then(({ transaction }) => transaction),
+        contacts: contactsResponse.then(r => r.json()).then(({ contacts }) => contacts) as Promise<Contact[]>,
+        transaction: transactionResponse.then(r => r.json()).then(({ transaction }) => transaction) as Promise<Transaction>,
+        split: splitsResponse.then(r => r.json()).then(({ split }) => split) as Promise<Split | null>,
     };
 }
 

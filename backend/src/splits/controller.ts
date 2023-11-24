@@ -6,6 +6,17 @@ import { authMiddleware } from "../auth/middleware";
 import { SplitShare } from "./split.share.entity";
 
 export class SplitController extends BaseController {
+    static get = async (req: Request, res: Response) => {
+        const split = await AppDataSource.manager.getRepository(Split).findOne({
+            where: {
+                transactionId: req.params.transactionId,
+            },
+            relations: ["splitShares"],
+         });
+        return res.status(200).send({ split });
+    }
+
+
     static create = async (req: Request, res: Response) => {
         try {
             AppDataSource.manager.transaction(async transactionalEntityManager => {
@@ -37,6 +48,7 @@ export class SplitController extends BaseController {
 
     routes() {
         this.router.use(authMiddleware)
+        this.router.get('/', SplitController.get);
         this.router.post('/', SplitController.create);
     }
 }

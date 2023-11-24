@@ -29,10 +29,10 @@ AppDataSource.initialize().then(async () => {
     app.use('/auth', new AuthController().router);
     app.use('/account', new AccountController().router);
     app.use('/contact', new ContactController().router);
-    app.use('/splits', new SplitController().router);
     
     // Register account specific routes:
     app.use('/account/:accountId/transaction', new TransactionController().router);
+    app.use('/account/:accountId/transaction/:transactionId/splits', new SplitController().router);
 
     app.listen(port, () => {
         console.log(`Example app listening at http://localhost:${port}`)
