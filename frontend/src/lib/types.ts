@@ -39,9 +39,15 @@ export interface Contact {
     email: string;
 }
 
+export enum SplitType {
+    Evenly = "evenly",
+    Percentage = "percentage",
+    Amount = "amount",
+}
+
 export interface Split {
     id: number;
-    type: "evenly" | "percentage" | "amount";
+    type: SplitType;
     splitShares: SplitShare[];
 }
 
