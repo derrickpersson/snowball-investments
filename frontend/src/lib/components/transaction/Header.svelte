@@ -4,12 +4,13 @@
 	import DetailedAmount from "./DetailedAmount.svelte";
 
     export let transaction: Transaction;
-    export let backLocation: string | undefined = undefined;
 </script>
 
-<a class="text-5xl mb-4 block" href={`${backLocation || `/app`}`}>
+<button class="text-5xl mb-4 block" on:click={() => {
+    history.back();
+}}>
     {@html LeftArrowIcon}
-</a>
+</button>
 <div class="flex flex-row justify-between items-end">
     <div class="flex flex-col justify-start gap-2">
         {#if transaction.vendor.logoURL}

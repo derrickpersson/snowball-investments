@@ -33,7 +33,7 @@
             type="number"
             disabled={isUser}
             class={`input variant-form-material ${type === "percentage" ? "text-right" : "text-left"}`}
-            value={amount}
+            value={Number(amount.toFixed(2))}
             on:change={(event) => {
                 if (type === SplitType.Evenly) {
                     handleSplitTypeUpdate(SplitType.Amount);

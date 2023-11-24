@@ -52,15 +52,16 @@
         userShare = amount;
     }
 
-    const handleSplitTypeUpdate = (type: SplitType) => {
+    const handleSplitTypeUpdate = (typeUpdate: SplitType) => {
         splitStore.update((split) => {
-            const newSplit = updateSplitShares(type, split, transaction.creditAmount);
+            const newSplit = updateSplitShares(typeUpdate, split, transaction.creditAmount);
 
             return {
                 ...newSplit,
-                type
+                type: typeUpdate
             }
         });
+        type = typeUpdate;
     }
 
     const handleSplitShareUpdate = (contactId: string, amount: number) => {

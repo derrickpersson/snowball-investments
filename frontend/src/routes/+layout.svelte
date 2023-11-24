@@ -17,7 +17,6 @@
 	rounded="rounded-lg"
 />
 <AppShell>
-	<svelte:fragment slot="header"><Header /></svelte:fragment>
 	<!-- (sidebarLeft) -->
 	<!-- (sidebarRight) -->
 	<!-- (pageHeader) -->
