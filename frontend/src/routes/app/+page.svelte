@@ -4,9 +4,8 @@
     import type { Writable } from "svelte/store";
     import groupBy from 'lodash.groupby';
 	import type { Account, Transaction } from "$lib/types";
-	import Amount from "$lib/components/transaction/Amount.svelte";
 	import { capitalize } from "$lib/strings";
-    import { TabGroup, Tab, TabAnchor } from '@skeletonlabs/skeleton';
+    import { TabGroup, Tab } from '@skeletonlabs/skeleton';
 	import Balance from "$lib/components/account/Balance.svelte";
     import TransactionItem from "$lib/components/transaction/Item.svelte";
 
@@ -23,8 +22,6 @@
     $: accountTransactions = groupBy(selectedAccount?.recentTransactions || [], (transaction) => {
         return new Date(transaction.createdAt).toLocaleDateString();
     });
-
-    $: console.log(data);
 </script>
 
 <div class="container mx-auto max-w-md">

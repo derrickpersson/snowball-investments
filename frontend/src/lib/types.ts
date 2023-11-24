@@ -31,3 +31,22 @@ export interface Vendor {
     name: string;
     logoURL: string;
 }
+
+export interface Contact {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
+export interface Split {
+    id: number;
+    type: "evenly" | "percentage" | "amount";
+    splitShares: SplitShare[];
+}
+
+export interface SplitShare {
+    id: number;
+    contactId: string;
+    amount: number;
+}

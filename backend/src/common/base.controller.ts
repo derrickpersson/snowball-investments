@@ -4,7 +4,7 @@ export abstract class BaseController {
     public router: Router;
 
     constructor() {
-        this.router = Router();
+        this.router = Router({ mergeParams: true });
         this.routes();
     }
 
