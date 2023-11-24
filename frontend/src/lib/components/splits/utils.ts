@@ -1,5 +1,8 @@
 import type { Contact, Split, SplitShare } from "$lib/types";
 import { SplitType } from "$lib/types";
+import type { ToastSettings } from "@skeletonlabs/skeleton";
+import SuccessMessage from "$lib/components/splits/Success.html?raw";
+import type { ActionResult } from "@sveltejs/kit";
 
 
 
@@ -67,7 +70,7 @@ export const updateSplitShares = (newType: SplitType, split: Split, txnAmount: n
             }
         })
     }
-    
+
     if(split.type === SplitType.Percentage && newType === SplitType.Amount) {
         split.splitShares = split.splitShares.map((s) => {
             return {
@@ -77,4 +80,36 @@ export const updateSplitShares = (newType: SplitType, split: Split, txnAmount: n
         })
     }
     return split;
+}
+
+export const toastHandler = (formResult: ActionResult) => {
+    switch(formResult.type) {
+        case "success":
+            const tSuccess: ToastSettings = {
+                message: SuccessMessage,
+                background: 'variant-filled-primary',
+                classes: "text-on-primary-token rounded-lg w-full",
+                hideDismiss: true,
+                timeout: 3000
+            };
+            return tSuccess;
+        case "failure":
+            const tFail: ToastSettings = {
+                message: formResult.data?.message || "Something went wrong",
+                background: 'variant-filled-error',
+                classes: "text-on-error-token rounded-lg w-full",
+                hideDismiss: true,
+                timeout: 3000
+            };
+            return tFail;
+        case "error":
+            const tError: ToastSettings = {
+                message: formResult.error?.message || "Something went wrong",
+                background: 'variant-filled-error',
+                classes: "text-on-error-token rounded-lg w-full",
+                hideDismiss: true,
+                timeout: 3000
+            };
+            return tError;
+    }
 }

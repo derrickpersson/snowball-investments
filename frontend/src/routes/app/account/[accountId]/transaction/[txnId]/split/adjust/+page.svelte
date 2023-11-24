@@ -7,9 +7,12 @@
 	import ActionButton from "$lib/components/ActionButton.svelte";
 	import { getContext } from "svelte";
 	import { SplitType, type Contact, type Split } from "$lib/types";
-	import { calculateRequestedTotalFromSplitShares, updateSplitShares } from "$lib/components/splits/utils";
-	import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
+	import { calculateRequestedTotalFromSplitShares, toastHandler, updateSplitShares } from "$lib/components/splits/utils";
+	import { RadioGroup, RadioItem, getToastStore, type ToastSettings } from "@skeletonlabs/skeleton";
 	import type { LayoutData } from "../$types";
+	import { superForm } from "sveltekit-superforms/client";
+
+    const toastStore = getToastStore();
 
     export let data: PageData & LayoutData;
     $: ({ transaction } = data);
@@ -18,6 +21,36 @@
     const splitStore = getContext("splitStore") as Writable<Split>;
 
     let type: SplitType = $splitStore?.type || SplitType.Evenly;
+
+    let userShare = 0;
+    $: {
+        if($splitStore.type === SplitType.Percentage) {
+            // If it's type is percentage, we need to display a percentage
+            userShare = Number((((transaction.creditAmount - calculateRequestedTotalFromSplitShares(type, transaction.creditAmount, $splitStore.splitShares)) / transaction.creditAmount) * 100).toFixed(2));
+        } else {
+            userShare = Number((transaction.creditAmount - calculateRequestedTotalFromSplitShares(type, transaction.creditAmount, $splitStore.splitShares)).toFixed(2));
+        }
+    }
+
+    const { form, enhance } = superForm(data.form, {
+        dataType: 'json',
+        taintedMessage: null,
+        onResult: async ({ result }) => {
+            const toastSettings = toastHandler(result);
+            toastSettings && toastStore.trigger(toastSettings);
+        }
+    });
+
+    $: $form.transactionId = transaction?.id;
+    $: $form.type = $splitStore.type;
+    $: {
+        $form.splitShares = $splitStore.splitShares;
+    }
+
+
+    const handleUserSplitShareUpdate = (_:string, amount: number) => {
+        userShare = amount;
+    }
 
     const handleSplitTypeUpdate = (type: SplitType) => {
         splitStore.update((split) => {
@@ -47,20 +80,6 @@
                 splitShares: updatedSplitShares
             }
         })
-    }
-
-    let userShare = 0;
-    $: {
-        if($splitStore.type === SplitType.Percentage) {
-            // If it's type is percentage, we need to display a percentage
-            userShare = Number((((transaction.creditAmount - calculateRequestedTotalFromSplitShares(type, transaction.creditAmount, $splitStore.splitShares)) / transaction.creditAmount) * 100).toFixed(2));
-        } else {
-            userShare = Number((transaction.creditAmount - calculateRequestedTotalFromSplitShares(type, transaction.creditAmount, $splitStore.splitShares)).toFixed(2));
-        }
-    }
-
-    const handleUserSplitShareUpdate = (_:string, amount: number) => {
-        userShare = amount;
     }
 </script>
 
@@ -119,11 +138,11 @@
     </div>
 </div>
 <div class="flex flex-col gap-2">
-    <!-- <form method="POST" action="../" use:enhance> -->
+    <form method="POST" action="../split?/createSplit" use:enhance>
         <ActionButton
             type="submit"
             icon={MoneyIcon}
             title="Request funds"
         />
-    <!-- </form> -->
+    </form>
 </div>

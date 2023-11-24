@@ -20,7 +20,18 @@ export const splitSchema = z.object({
 	splitShares: z.array(z.object({
 		contactId: z.string(),
 		amount: z.number().min(0.01, "Amount must be at least $0.01"),
-	})),
+	}))
+}).refine((split) => {
+	if(split.type === "percentage") {
+		// If the type is 'percentage', ensure the total does not exceed 100%
+		const totalPercentage = split.splitShares.reduce((acc, { amount }) => acc + amount, 0);
+		return totalPercentage <= 100;
+	} else {
+		return true;
+	}
+}, {
+	message: "Total percentage cannot exceed 100",
+	path: ["splitShares"],
 });
 
 
