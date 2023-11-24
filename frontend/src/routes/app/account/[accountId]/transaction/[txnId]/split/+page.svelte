@@ -10,6 +10,10 @@
 	import ActionButton from "$lib/components/ActionButton.svelte";
 	import type { Contact } from "$lib/types";
 	import { superForm } from "sveltekit-superforms/client";
+    import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+    import SuccessMessage from "$lib/components/splits/Success.html?raw";
+
+    const toastStore = getToastStore();
 
     export let data: PageData & PageServerData;
 
@@ -19,7 +23,14 @@
         dataType: 'json',
         onResult: async ({ result }) => {
             if(result.type === "success") {
-                alert("Success!");
+                const t: ToastSettings = {
+                    message: SuccessMessage,
+                    background: 'variant-filled-primary',
+                    classes: "text-on-primary-token rounded-lg w-full",
+                    hideDismiss: true,
+                    timeout: 3000
+                };
+                toastStore.trigger(t);
             }
         }
     });
