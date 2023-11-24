@@ -31,3 +31,10 @@ export interface Vendor {
     name: string;
     logoURL: string;
 }
+
+export interface Contact {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+}

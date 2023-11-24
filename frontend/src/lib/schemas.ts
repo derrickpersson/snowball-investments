@@ -14,4 +14,13 @@ export const loginUserSchema = z.object({
     password: z.string(),
 });
 
+export const splitSchema = z.object({
+	transactionId: z.string(),
+	type: z.enum(["evenly", "percentage", "amount"]),
+	splitShares: z.array(z.object({
+		contactId: z.string(),
+		amount: z.number().min(0.01, "Amount must be at least $0.01"),
+	})),
+});
+
 

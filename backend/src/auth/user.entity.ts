@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, Unique, ManyToMany, OneToMany } from "typeorm";
+import { Contact } from "../contact/contact.entity";
 
 @Entity()
 @Unique(["email"])
@@ -21,4 +22,7 @@ export class User {
 
     @Column()
     lastName: string;
+
+    @OneToMany(() => Contact, contact => contact.owner)
+    contacts: Contact[];
 }

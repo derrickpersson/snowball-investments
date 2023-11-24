@@ -2,11 +2,12 @@ import { AuthController } from "./auth/controller";
 import { AppDataSource } from "./data-source";
 import * as express from 'express';
 import "./global";
-import { accountPermissionMiddleware } from "./account/middleware";
 import { AccountController } from "./account/controller";
 import { TransactionController } from "./account/transactions/controller";
 import * as cookieParser from "cookie-parser";
 import * as cors from "cors";
+import { ContactController } from "./contact/controller";
+import { SplitController } from "./splits/controller";
 
 AppDataSource.initialize().then(async () => {
     const app: express.Application = express()
@@ -27,6 +28,8 @@ AppDataSource.initialize().then(async () => {
     // Register routes:
     app.use('/auth', new AuthController().router);
     app.use('/account', new AccountController().router);
+    app.use('/contact', new ContactController().router);
+    app.use('/splits', new SplitController().router);
     
     // Register account specific routes:
     app.use('/account/:accountId/transaction', new TransactionController().router);
