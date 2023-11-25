@@ -1,21 +1,36 @@
 <script lang="ts">
-	import { ProgressRadial, focusTrap } from "@skeletonlabs/skeleton";
+	import { ProgressRadial, focusTrap, type ToastSettings, getToastStore } from "@skeletonlabs/skeleton";
     import type { PageData } from './$types';
     import { superForm } from 'sveltekit-superforms/client';
 	import Input from "$lib/components/form/Input.svelte";
 	import { goto } from "$app/navigation";
 	import { getContext } from "svelte";
 	import type { Writable } from "svelte/store";
+	import Header from "$lib/components/layout/Header.svelte";
 
     export let data: PageData;
+    const toastStore = getToastStore();
 
     const userContext = getContext("user") as Writable<any | null>;
 
     const { form, errors, enhance, delayed } = superForm(data.form, {
         onResult: async ({ result }) => {
-            if(result.type === "success") {
-                userContext.set(result.data?.user);
-                await goto("/app");
+            switch(result.type) {
+                case "success":
+                    userContext.set(result.data?.user);
+                    await goto("/app");
+                    break;
+                case "failure":
+                case "error":
+                const tError: ToastSettings = {
+                        message: "Check your details and try again.",
+                        background: 'variant-filled-error',
+                        classes: "text-on-error-token rounded-lg w-full",
+                        hideDismiss: true,
+                        timeout: 3000
+                    };
+                    toastStore.trigger(tError);
+                    break;
             }
         }
     });
@@ -23,7 +38,8 @@
     let isFocused: boolean = true;
 </script>
 
-<div class="container mx-auto max-w-md px-2 flex flex-col gap-4">
+<Header />
+<div class="container mx-auto max-w-md py-4 px-2 flex flex-col gap-4">
     <h3 class="text-center">
         Sign up for a free account!
     </h3>

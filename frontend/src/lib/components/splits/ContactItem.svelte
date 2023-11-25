@@ -2,11 +2,13 @@
     import ContactIcon from "$lib/assets/user-circle.svg?raw";
     import ColorHash from 'color-hash';
 	import DetailedAmount from "../transaction/DetailedAmount.svelte";
+	import { SplitType } from "$lib/types";
 
     export let contact: any;
     export let label: number | undefined = undefined;
     export let onSelect: (contact: any, checked: boolean) => void;
     export let checked: boolean = false;
+    export let type: SplitType;
 
     const colorHash = new ColorHash();
     const hash = colorHash.hex(contact.email);
@@ -29,10 +31,14 @@
     </div>
     <label class="pr-1 flex flex-row gap-2 items-center">
         {#if label !== undefined}
+            {#if [SplitType.Evenly, SplitType.Amount].includes(type)}
             <DetailedAmount 
                 amount={label}
                 size="sm"
             />
+            {:else if SplitType.Percentage === type}
+                <span>{label}%</span>
+            {/if}
         {/if}
         <input 
             type="checkbox" 
